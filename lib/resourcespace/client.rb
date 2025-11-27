@@ -137,7 +137,9 @@ module ResourceSpace
       }.merge(params)
 
       # Build query string for signing
-      query_string = URI.encode_www_form(request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) })
+      signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
+
+      query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join("&")
 
       # Generate signature
       signature = generate_signature(query_string)
