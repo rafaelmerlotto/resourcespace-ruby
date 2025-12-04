@@ -134,17 +134,21 @@ module ResourceSpace
       request_params = {
         user: config.user,
         function: function
-      }.merge(params)
+      }.merge(params.transform_keys(&:to_s))
 
       # Build query string for signing
-      signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
+      # signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
+      signing_params = {
+        user: config.user,
+        function: function
+      }
 
-      query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join("&")
+      query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join('&')
 
       # Generate signature
       signature = generate_signature(query_string)
       request_params[:sign] = signature
-      request_params[:authmode] = config.auth_mode
+      request_params[:authmode] = config.auth_mode if config.auth_mode
 
       # Make the request
       response = if method == :get
