@@ -149,6 +149,14 @@ module ResourceSpace
       request_params[:sign] = signature
       request_params[:authmode] = config.auth_mode if config.auth_mode
 
+      # DEBUG
+      puts '=== DEBUG SIGNATURE ==='
+      puts "Signing params: #{signing_params.inspect}"
+      puts "Query string: #{query_string}"
+      puts "Private key: #{config.private_key[0..10]}..."
+      puts "Signature generated: #{signature}"
+      puts '======================'
+
       # Make the request
       response = if method == :get
                    connection.get('', request_params)
