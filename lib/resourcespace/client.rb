@@ -137,11 +137,10 @@ module ResourceSpace
       }.merge(params.transform_keys(&:to_s))
 
       # Build query string for signing
-      # signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
-      signing_params = {
-        user: config.user,
-        function: function
-      }
+      signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
+
+      # Sort parameters alphabetically
+      signing_params = signing_params.sort.to_h
 
       query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join('&')
 
