@@ -68,6 +68,8 @@ module ResourceSpace
       client.get('get_collection', { param1: collection_id.to_s })
             .map { |c| Array(c).take(2) }
             .sort_by { |item| item[0].to_s }
+    rescue StandardError
+      ''
     end
 
     # Save collection (update collection details)
