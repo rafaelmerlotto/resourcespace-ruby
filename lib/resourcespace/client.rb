@@ -140,10 +140,10 @@ module ResourceSpace
       signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
 
       # Sort parameters alphabetically
-      # signing_params = signing_params.sort.to_h
+      signing_params = signing_params.sort.to_h
 
       # by key only
-      signing_params = signing_params.sort_by { |k, _| k.to_s }.to_h
+      # signing_params = signing_params.sort_by { |k, _| k.to_s }.to_h
 
       query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join('&')
 
@@ -161,7 +161,9 @@ module ResourceSpace
                  elsif multipart
                    connection.post('', request_params)
                  else
-                   connection.post('', URI.encode_www_form(request_params))
+                   safe_params = request_params.transform_values { |v| v.is_a?(Array) ? v.join(',') : v }
+
+                   connection.post('', URI.encode_www_form(safe_params))
                  end
 
       handle_response(response)
