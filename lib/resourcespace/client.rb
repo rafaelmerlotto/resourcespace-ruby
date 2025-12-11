@@ -161,9 +161,9 @@ module ResourceSpace
                  elsif multipart
                    connection.post('', request_params)
                  else
-                   safe_params = request_params.transform_values { |v| v.is_a?(Array) ? v.join(',') : v }
+                   ordered_query = URI.encode_www_form(request_params.sort.to_h)
 
-                   connection.post('', URI.encode_www_form(safe_params))
+                   connection.post("?#{ordered_query}")
                  end
 
       handle_response(response)
