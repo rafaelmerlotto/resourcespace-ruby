@@ -134,10 +134,9 @@ module ResourceSpace
       request_params = {
         user: config.user,
         function: function
-      }
+      }.merge(params.transform_keys(&:to_s))
 
       request_params[:authmode] = config.auth_mode if config.auth_mode
-      request_params.merge!(params.transform_keys(&:to_s))
 
       # Build query string for signing
       signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
@@ -152,6 +151,8 @@ module ResourceSpace
 
       # Generate signature
       signature = generate_signature(query_string)
+
+      request_params[:authmode] = config.auth_mode if config.auth_mode
       request_params[:sign] = signature
 
       # Make the request
