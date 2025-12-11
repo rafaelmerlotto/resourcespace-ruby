@@ -136,8 +136,6 @@ module ResourceSpace
         function: function
       }.merge(params.transform_keys(&:to_s))
 
-      request_params[:authmode] = config.auth_mode if config.auth_mode
-
       # Build query string for signing
       signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
 
@@ -157,7 +155,7 @@ module ResourceSpace
 
       # Make the request
       response = if method == :get
-                   ordered_query = URI.encode_www_form(request_params)
+                   ordered_query = URI.encode_www_form(request_params.sort.to_h)
 
                    connection.get("?#{ordered_query}")
                  elsif multipart
