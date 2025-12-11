@@ -140,7 +140,10 @@ module ResourceSpace
       signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
 
       # Sort parameters alphabetically
-      signing_params = signing_params.sort.to_h
+      # signing_params = signing_params.sort.to_h
+
+      # by key only
+      signing_params = signing_params.sort_by { |k, _| k.to_s }.to_h
 
       query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join('&')
 
