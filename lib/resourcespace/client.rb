@@ -151,7 +151,9 @@ module ResourceSpace
 
       # Make the request
       response = if method == :get
-                   connection.get('', request_params)
+                   ordered_query = URI.encode_www_form(request_params.sort.to_h)
+
+                   connection.get("?#{ordered_query}")
                  elsif multipart
                    connection.post('', request_params)
                  else
