@@ -149,9 +149,8 @@ module ResourceSpace
 
       # Generate signature
       signature = generate_signature(query_string)
-
-      request_params[:authmode] = config.auth_mode if config.auth_mode
       request_params[:sign] = signature
+      request_params[:authmode] = config.auth_mode if config.auth_mode
 
       full_url = "#{config.url}?#{query_string}&sign=#{signature}"
 
