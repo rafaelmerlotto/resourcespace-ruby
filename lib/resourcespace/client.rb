@@ -137,15 +137,15 @@ module ResourceSpace
       }.merge(params.transform_keys(&:to_s))
 
       # Build query string for signing
-      signing_params = request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) }
+      query_string = URI.encode_www_form(request_params.reject { |_k, v| v.is_a?(Faraday::UploadIO) })
 
       # Sort parameters alphabetically
       # signing_params = signing_params.sort.to_h
 
       # by key only
-      signing_params = signing_params.sort_by { |k, _| k.to_s }.to_h
+      # signing_params = signing_params.sort_by { |k, _| k.to_s }.to_h
 
-      query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join('&')
+      # query_string = signing_params.map { |k, v| "#{k}=#{v}" }.join('&')
 
       # Generate signature
       signature = generate_signature(query_string)
@@ -153,17 +153,15 @@ module ResourceSpace
       request_params[:authmode] = config.auth_mode if config.auth_mode
       request_params[:sign] = signature
 
+      full_url = "#{config.url}?#{query_string}&sign=#{signature}"
+
       # Make the request
       response = if method == :get
-                   ordered_query = URI.encode_www_form(request_params.sort.to_h)
-
-                   connection.get("?#{ordered_query}")
+                   connection.get(full_url)
                  elsif multipart
-                   connection.post('', request_params)
+                   connection.post(full_url)
                  else
-                   ordered_query = URI.encode_www_form(request_params.sort.to_h)
-
-                   connection.post("?#{ordered_query}")
+                   connection.post(full_url)
                  end
 
       handle_response(response)
